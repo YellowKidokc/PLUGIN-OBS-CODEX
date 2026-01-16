@@ -1,0 +1,10 @@
+{
+  "id": "theophysics-glossary-plus",
+  "name": "Theophysics Glossary Plus",
+  "version": "1.0.0",
+  "minAppVersion": "0.15.0",
+  "description": "Enhanced glossary and definition system with Wikipedia and external links.",
+  "author": "Theophysics",
+  "authorUrl": "https://example.com",
+  "isDesktopOnly": false
+}

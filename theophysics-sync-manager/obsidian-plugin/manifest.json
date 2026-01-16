@@ -1,0 +1,10 @@
+{
+  "id": "theophysics-sync-manager",
+  "name": "Theophysics Sync Manager",
+  "version": "1.0.0",
+  "minAppVersion": "0.15.0",
+  "description": "Sync Obsidian vaults with PostgreSQL via a Python backend.",
+  "author": "Theophysics",
+  "authorUrl": "https://example.com",
+  "isDesktopOnly": false
+}

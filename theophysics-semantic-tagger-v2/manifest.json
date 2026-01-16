@@ -1,0 +1,10 @@
+{
+  "id": "theophysics-semantic-tagger-v2",
+  "name": "Theophysics Semantic Tagger v2",
+  "version": "1.0.0",
+  "minAppVersion": "0.15.0",
+  "description": "Streaming semantic tagging with robust encoding handling.",
+  "author": "Theophysics",
+  "authorUrl": "https://example.com",
+  "isDesktopOnly": false
+}
