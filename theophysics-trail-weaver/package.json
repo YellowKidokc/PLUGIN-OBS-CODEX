@@ -1,0 +1,17 @@
+{
+  "name": "theophysics-trail-weaver",
+  "version": "1.0.0",
+  "description": "Trail management plugin for Theophysics.",
+  "main": "main.js",
+  "scripts": {
+    "build": "esbuild src/main.ts --bundle --outfile=main.js --target=es2018 --format=cjs"
+  },
+  "dependencies": {
+    "obsidian": "latest"
+  },
+  "devDependencies": {
+    "@types/node": "^16.0.0",
+    "esbuild": "^0.17.0",
+    "typescript": "^4.0.0"
+  }
+}
