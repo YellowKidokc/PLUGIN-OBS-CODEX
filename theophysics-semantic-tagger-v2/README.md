@@ -1,5 +1,14 @@
 # Theophysics Semantic Tagger v2
 
+Streaming semantic tagging workflow with robust encoding handling, AI prompt support, and resumable batches.
+
+## Features
+- Stream processing (10 files at a time)
+- Encoding fallbacks (UTF-8 with BOM, Windows-1252)
+- Progress saved between chunks with resume support
+- Built-in AI prompts and custom prompt selection
+- Folder tagging via context menu
+- Output formats: frontmatter tags, append, or separate file
 Streaming semantic tagging workflow with robust encoding handling and resumable batches.
 
 ## Fixes Included
