@@ -3,7 +3,7 @@
   "name": "Theophysics Semantic Tagger v2",
   "version": "1.0.0",
   "minAppVersion": "0.15.0",
-  "description": "Streaming semantic tagging with AI prompts and resumable batches.",
+  "description": "Streaming semantic tagging with robust encoding handling.",
   "author": "Theophysics",
   "authorUrl": "https://example.com",
   "isDesktopOnly": false
