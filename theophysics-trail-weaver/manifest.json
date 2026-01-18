@@ -1,0 +1,10 @@
+{
+  "id": "theophysics-trail-weaver",
+  "name": "Theophysics Trail Weaver",
+  "version": "1.0.0",
+  "minAppVersion": "0.15.0",
+  "description": "Create numbered trails through research notes.",
+  "author": "Theophysics",
+  "authorUrl": "https://example.com",
+  "isDesktopOnly": false
+}

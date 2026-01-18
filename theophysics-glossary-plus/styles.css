@@ -1,0 +1,118 @@
+/* Glossary link appearance */
+.glossary-link {
+  text-decoration: underline;
+  text-decoration-style: dotted;
+  cursor: pointer;
+  position: relative;
+}
+
+.glossary-link:hover {
+  background-color: rgba(59, 130, 246, 0.1);
+}
+
+/* Hover preview */
+.glossary-hover-preview {
+  max-width: 400px;
+  padding: 12px;
+  background: var(--background-primary);
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.glossary-hover-preview h3 {
+  margin: 0 0 8px 0;
+  font-size: 1.1em;
+}
+
+.glossary-hover-preview .link-section {
+  margin-top: 12px;
+  padding-top: 8px;
+  border-top: 1px solid var(--background-modifier-border);
+}
+
+.glossary-hover-preview .link-section h4 {
+  margin: 0 0 4px 0;
+  font-size: 0.9em;
+  color: var(--text-muted);
+}
+
+/* Confirmation modal */
+.glossary-confirmation-modal {
+  max-width: 500px;
+}
+
+.glossary-confirmation-modal .link-info {
+  background: var(--background-secondary);
+  padding: 12px;
+  border-radius: 6px;
+  margin-bottom: 16px;
+}
+
+.glossary-confirmation-modal .link-url {
+  font-family: monospace;
+  font-size: 0.85em;
+  color: var(--text-muted);
+  word-break: break-all;
+}
+
+.glossary-confirmation-modal .button-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.glossary-confirmation-modal .more-options {
+  margin-top: 16px;
+}
+
+.glossary-confirmation-modal .more-options summary {
+  cursor: pointer;
+  color: var(--text-muted);
+}
+
+.glossary-confirmation-modal .more-options-content {
+  margin-top: 12px;
+  padding: 12px;
+  background: var(--background-secondary);
+  border-radius: 6px;
+}
+
+.glossary-confirmation-modal .settings-link {
+  margin-top: 16px;
+  text-align: center;
+}
+
+.glossary-confirmation-modal .dont-show-again {
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid var(--background-modifier-border);
+}
+
+/* Settings disabled lists */
+.disabled-list ul {
+  list-style: none;
+  padding: 0;
+}
+
+.disabled-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 4px 8px;
+  background: var(--background-secondary);
+  margin-bottom: 4px;
+  border-radius: 4px;
+}
+
+.disabled-list .remove-btn {
+  background: none;
+  border: none;
+  color: var(--text-error);
+  cursor: pointer;
+}
+
+.disabled-list .muted {
+  color: var(--text-muted);
+  font-style: italic;
+}
