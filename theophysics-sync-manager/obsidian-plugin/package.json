@@ -4,7 +4,7 @@
   "description": "Obsidian plugin for Theophysics sync manager.",
   "main": "main.js",
   "scripts": {
-    "build": "esbuild src/main.ts --bundle --outfile=main.js --target=es2018 --format=cjs"
+    "build": "esbuild src/main.ts --bundle --external:obsidian --outfile=main.js --target=es2018 --format=cjs --platform=node"
   },
   "dependencies": {
     "obsidian": "latest"

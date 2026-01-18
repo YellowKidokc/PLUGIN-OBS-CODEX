@@ -1,135 +1,125 @@
 import { App, Modal, Notice, Setting } from 'obsidian';
-import { TermDefinition } from '../types';
+import { DefinitionManager } from '../definition-manager';
+import { fetchWikipediaDefinition } from '../wikipedia-api';
+import { GlossaryPlusSettings } from '../settings';
 
 export class AddDefinitionModal extends Modal {
   private term = '';
-  private summary = '';
-  private aliases = '';
-  private internalPath = '';
-  private storyPath = '';
-  private externalLinks = '';
+  private definition = '';
+  private templateName = '';
+  private externalLinksFetched = false;
 
-  constructor(app: App, private onSave: (definition: TermDefinition) => void) {
+  constructor(
+    app: App,
+    private manager: DefinitionManager,
+    private settings: GlossaryPlusSettings,
+    term?: string,
+  ) {
     super(app);
+    this.term = term ?? '';
+    this.templateName = settings.defaultTemplate;
   }
 
   onOpen(): void {
     const { contentEl } = this;
     contentEl.empty();
-    contentEl.createEl('h2', { text: 'Add Glossary Definition' });
+    contentEl.createEl('h2', { text: 'Add Definition' });
 
     new Setting(contentEl)
       .setName('Term')
       .addText((text) =>
-        text.setPlaceholder('Logos').onChange((value) => {
-          this.term = value.trim();
+        text.setValue(this.term).onChange((value) => {
+          this.term = value;
         }),
       );
 
     new Setting(contentEl)
-      .setName('Summary')
-      .setDesc('Short hover summary')
+      .setName('Definition')
       .addTextArea((textArea) => {
-        textArea.inputEl.rows = 3;
-        textArea.onChange((value) => {
-          this.summary = value.trim();
+        textArea.inputEl.rows = 6;
+        textArea.setValue(this.definition).onChange((value) => {
+          this.definition = value;
         });
       });
 
     new Setting(contentEl)
-      .setName('Aliases')
-      .setDesc('Comma-separated aliases')
-      .addText((text) =>
-        text.onChange((value) => {
-          this.aliases = value;
-        }),
-      );
+      .setName('Template')
+      .addDropdown((dropdown) => {
+        this.settings.customTemplates.forEach((template) => {
+          dropdown.addOption(template.name, template.name);
+        });
+        dropdown.setValue(this.templateName);
+        dropdown.onChange((value) => {
+          this.templateName = value;
+        });
+      });
 
-    new Setting(contentEl)
-      .setName('Internal definition path')
-      .setDesc('Path to your definition note')
-      .addText((text) =>
-        text.setPlaceholder('Definitions/Logos.md').onChange((value) => {
-          this.internalPath = value.trim();
-        }),
-      );
-
-    new Setting(contentEl)
-      .setName('Story trail path')
-      .setDesc('Path to the Trail/Story note')
-      .addText((text) =>
-        text.setPlaceholder('Trails/Logos-Trail.md').onChange((value) => {
-          this.storyPath = value.trim();
-        }),
-      );
+    if (this.settings.enableWikipediaAPI) {
+      new Setting(contentEl)
+        .setName('Wikipedia')
+        .setDesc('Pull a summary from Wikipedia and use it as the definition.')
+        .addButton((button) =>
+          button.setButtonText('Pull from Wikipedia').onClick(async () => {
+            if (!this.term.trim()) {
+              new Notice('Enter a term first.');
+              return;
+            }
+            try {
+              const result = await fetchWikipediaDefinition(this.term, this.settings.wikipediaLanguage);
+              this.definition = result.extract;
+              new Notice(`Loaded Wikipedia summary for ${result.title}`);
+              this.renderExternalLinks(result.url);
+            } catch (error) {
+              console.error(error);
+              new Notice('Failed to fetch Wikipedia summary.');
+            }
+          }),
+        );
+    }
 
     new Setting(contentEl)
       .setName('External links')
-      .setDesc('Comma-separated URLs for external sources')
-      .addTextArea((textArea) => {
-        textArea.inputEl.rows = 3;
-        textArea.onChange((value) => {
-          this.externalLinks = value;
-        });
-      });
+      .setDesc('Fetch external sources for this term.')
+      .addButton((button) =>
+        button.setButtonText('Fetch External Links').onClick(async () => {
+          if (!this.term.trim()) {
+            new Notice('Enter a term first.');
+            return;
+          }
+          await this.manager.fetchExternalLinks(this.term);
+          this.externalLinksFetched = true;
+          new Notice('External links fetched.');
+        }),
+      );
 
-    new Setting(contentEl).addButton((button) =>
-      button
-        .setButtonText('Add Definition')
-        .setCta()
-        .onClick(() => {
-          if (!this.term) {
+    new Setting(contentEl)
+      .addButton((button) =>
+        button.setButtonText('Add Definition').setCta().onClick(async () => {
+          if (!this.term.trim()) {
             new Notice('Term is required.');
             return;
           }
 
-          const now = new Date().toISOString();
-          const definition: TermDefinition = {
-            id: crypto.randomUUID(),
-            term: this.term,
-            aliases: splitList(this.aliases),
-            summary: this.summary || this.term,
-            externalLinks: splitList(this.externalLinks).map((url) => ({
-              id: crypto.randomUUID(),
-              type: 'external',
-              url,
-              label: url,
-              enabled: true,
-            })),
-            internalLink: this.internalPath
-              ? {
-                  id: crypto.randomUUID(),
-                  type: 'internal',
-                  url: this.internalPath,
-                  label: 'Open definition',
-                  enabled: true,
-                }
-              : undefined,
-            storyLink: this.storyPath
-              ? {
-                  id: crypto.randomUUID(),
-                  type: 'story',
-                  url: this.storyPath,
-                  label: `Story: ${this.term}`,
-                  enabled: true,
-                }
-              : undefined,
-            fullDefinitionPath: this.internalPath || undefined,
-            allLinksEnabled: true,
-            createdAt: now,
-            updatedAt: now,
-          };
+          const externalLinks = this.externalLinksFetched
+            ? await this.manager.fetchExternalLinks(this.term)
+            : undefined;
 
-          this.onSave(definition);
+          await this.manager.createDefinition({
+            term: this.term,
+            definition: this.definition,
+            source: 'internal',
+            externalLinks,
+            templateName: this.templateName,
+          });
           this.close();
         }),
-    );
+      );
   }
-}
 
-function splitList(value: string): string[] {
-  return value
-    .split(',')
-    .map((item) => item.trim())
-    .filter(Boolean);
+  private renderExternalLinks(url: string): void {
+    const { contentEl } = this;
+    const preview = contentEl.createDiv({ cls: 'glossary-plus-wikipedia-preview' });
+    preview.createEl('strong', { text: 'Wikipedia:' });
+    preview.createEl('a', { text: url, href: url });
+  }
 }

@@ -1,6 +1,5 @@
 import { App, TFile } from 'obsidian';
 import { parseTrailMentions, TrailMention } from './link-parser';
-import { readFileRobust, sanitizeContent } from './utils/encoding';
 
 export class TrailManager {
   trails: Map<string, TrailMention[]> = new Map();
@@ -12,8 +11,7 @@ export class TrailManager {
     const files = this.app.vault.getMarkdownFiles();
 
     for (const file of files) {
-      const rawContent = await readFileRobust(this.app, file);
-      const content = sanitizeContent(rawContent);
+      const content = await this.app.vault.read(file);
       const mentions = parseTrailMentions(content, file);
 
       for (const mention of mentions) {
@@ -38,8 +36,7 @@ export class TrailManager {
   }
 
   async addTrailMention(file: TFile, trail: string, sequence: number, concept: string): Promise<void> {
-    const rawContent = await readFileRobust(this.app, file);
-    const content = sanitizeContent(rawContent);
+    const content = await this.app.vault.read(file);
     const mention = `[[${concept}]]^${trail}-${sequence}`;
     await this.app.vault.modify(file, `${content}\n${mention}`);
   }

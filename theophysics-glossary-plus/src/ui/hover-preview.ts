@@ -1,11 +1,13 @@
-import { App, HoverPopover } from 'obsidian';
-import { DefinitionLink, TermDefinition } from '../types';
+import { App, HoverPopover, TFile } from 'obsidian';
+import { DefinitionRecord } from '../utils/parser';
+import { ExternalLinks } from '../dual-link-handler';
 
 export class HoverPreview extends HoverPopover {
   constructor(
     app: App,
-    private definition: TermDefinition,
-    private externalLinks: DefinitionLink[],
+    private definition: DefinitionRecord,
+    private externalLinks: ExternalLinks,
+    private showExternalLinks: boolean,
   ) {
     super(app);
   }
@@ -13,36 +15,24 @@ export class HoverPreview extends HoverPopover {
   onOpen(): void {
     const contentEl = this.contentEl;
     contentEl.empty();
-    contentEl.addClass('glossary-hover-preview');
 
-    contentEl.createEl('h3', { text: this.definition.term });
-    contentEl.createEl('p', { text: this.definition.summary });
+    contentEl.createEl('h4', { text: this.definition.term });
+    contentEl.createEl('p', { text: this.definition.definition });
 
-    if (this.definition.internalLink) {
-      const internal = contentEl.createDiv({ cls: 'link-section' });
-      internal.createEl('h4', { text: '📝 My Definition' });
-      internal.createEl('a', {
-        text: this.definition.internalLink.label,
-        href: this.definition.internalLink.url,
-      });
-    }
-
-    if (this.externalLinks.length > 0) {
-      const external = contentEl.createDiv({ cls: 'link-section' });
-      external.createEl('h4', { text: '🌐 External Sources' });
-      const list = external.createEl('ul');
-      this.externalLinks.forEach((link) => {
-        list.createEl('li').createEl('a', { text: link.label, href: link.url });
-      });
-    }
-
-    if (this.definition.storyLink) {
-      const story = contentEl.createDiv({ cls: 'link-section' });
-      story.createEl('h4', { text: '📖 Story Trail' });
-      story.createEl('a', {
-        text: this.definition.storyLink.label,
-        href: this.definition.storyLink.url,
-      });
+    if (this.showExternalLinks) {
+      const list = contentEl.createEl('ul');
+      if (this.externalLinks.wikipedia) {
+        list.createEl('li').createEl('a', { href: this.externalLinks.wikipedia, text: 'Wikipedia' });
+      }
+      if (this.externalLinks.sep) {
+        list.createEl('li').createEl('a', { href: this.externalLinks.sep, text: 'SEP' });
+      }
+      if (this.externalLinks.philpapers) {
+        list.createEl('li').createEl('a', { href: this.externalLinks.philpapers, text: 'PhilPapers' });
+      }
+      if (this.externalLinks.scholarpedia) {
+        list.createEl('li').createEl('a', { href: this.externalLinks.scholarpedia, text: 'Scholarpedia' });
+      }
     }
   }
 }

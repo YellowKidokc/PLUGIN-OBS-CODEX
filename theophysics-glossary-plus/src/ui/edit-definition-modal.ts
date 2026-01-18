@@ -1,5 +1,4 @@
 import { App, Modal, Notice, TFile } from 'obsidian';
-import { readFileRobust, sanitizeContent } from '../utils/encoding';
 
 export class EditDefinitionModal extends Modal {
   constructor(app: App, private file: TFile) {
@@ -11,8 +10,7 @@ export class EditDefinitionModal extends Modal {
     contentEl.empty();
     contentEl.createEl('h2', { text: 'Edit Definition' });
 
-    const rawContent = await readFileRobust(this.app, this.file);
-    const content = sanitizeContent(rawContent);
+    const content = await this.app.vault.read(this.file);
     const editor = contentEl.createEl('textarea');
     editor.value = content;
     editor.rows = 12;

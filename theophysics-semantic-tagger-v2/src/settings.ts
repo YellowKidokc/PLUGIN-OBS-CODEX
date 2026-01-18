@@ -7,7 +7,6 @@ export interface SemanticTaggerSettings {
   model: string;
   ollamaUrl: string;
   outputFormat: 'frontmatter' | 'append' | 'separate';
-  chunkSize: number;
   customPrompts: Record<string, string>;
 }
 
@@ -17,7 +16,6 @@ export const DEFAULT_SETTINGS: SemanticTaggerSettings = {
   model: 'llama2',
   ollamaUrl: 'http://localhost:11434',
   outputFormat: 'frontmatter',
-  chunkSize: 10,
   customPrompts: {},
 };
 
@@ -102,20 +100,6 @@ export class SemanticTaggerSettingsTab extends PluginSettingTab {
           .setValue(this.plugin.settings.outputFormat)
           .onChange(async (value: 'frontmatter' | 'append' | 'separate') => {
             this.plugin.settings.outputFormat = value;
-            await this.plugin.saveSettings();
-          }),
-      );
-
-    new Setting(containerEl)
-      .setName('Chunk size')
-      .setDesc('Number of files to process at a time.')
-      .addSlider((slider) =>
-        slider
-          .setLimits(5, 50, 5)
-          .setValue(this.plugin.settings.chunkSize)
-          .setDynamicTooltip()
-          .onChange(async (value) => {
-            this.plugin.settings.chunkSize = value;
             await this.plugin.saveSettings();
           }),
       );
